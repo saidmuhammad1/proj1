@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Needed so Dokku can see your git history
+          fetch-depth: 0 
 
       - name: Deploy to Dokku
         uses: dokku/github-action@v1.4.0
@@ -21,3 +21,5 @@ jobs:
           # If branch is 'prod', deploy to my-app-prod. Otherwise, deploy to my-app-staging.
           git_remote_url: ${{ github.ref_name == 'prod' && 'ssh://dokku@vps3405238:22/my-app-prod' || 'ssh://dokku@vps3405238:22/my-app-staging' }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Forces the action to push your active branch (main or prod) instead of defaulting to master
+          branch: ${{ github.ref_name }}
