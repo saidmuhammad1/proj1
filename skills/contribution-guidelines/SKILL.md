@@ -1,56 +1,22 @@
 ---
 name: contribution-guidelines
-description: Enforce structured PR descriptions with summaries, changes, and screenshots.
-version: 0.1.0
+description: "Enforce strict pre-PR lifecycle: before snapshot, changes, after snapshot, PR."
+version: 0.5.0
 author: Saidmuhammad (saidmuhammad1), Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
   hermes:
-    tags: [contribution, pr, guidelines, screenshots]
-    related_skills: []
+    tags: [contribution, pr, guidelines, lifecycle, screenshots]
+    related_skills: [requesting-code-review]
 ---
 
-# Contribution Guidelines Skill
+# Strict Contribution Guidelines & Lifecycle Skill
 
-Enforce a standardized PR structure across all contributions to ensure high quality, thorough testing, and clear visual evidence.
-
-## When to Use
-
-- When opening or reviewing a pull request in `proj1`.
-- When verifying pre-PR quality gates and visual UI states.
-
-## PR Structure Requirements
-
-Every pull request must include:
-
-1. **Summary of Changes**: High-level overview of what problem was solved and why.
-2. **What Changed**: Bulleted list of modified files, features added, or bugs fixed.
-3. **Before & After / Visual Attachments**: Screenshots or UI recordings proving the feature works as intended and matches design requirements.
-4. **Browser & Environment Testing**: Verification checkpoints across different browsers (Chromium, Firefox, Safari) and screen sizes (desktop/mobile).
-5. **Quality Gate Checkpoints**: Confirmation that all tests passed and no regression was introduced.
-
-## PR Description Template
-
-```markdown
-## Pull Request Title
-
-### Summary of Changes
-- Concise summary of the objective.
-
-### What Changed
-- File or feature A modified.
-- File or feature B added.
-
-### Browser Testing & Verification
-- [x] Verified in Chromium (Desktop)
-- [x] Verified responsive layouts
-- [x] Automated tests passing
-
-### App Preview / Attachments
-<img src="https://raw.githubusercontent.com/saidmuhammad1/proj1/<branch>/screenshot.png" alt="App Screenshot" width="600"/>
-```
-
-## Verification
-
-- Ensure every PR meets all 5 checklist points before merging.
+Strict workflow rule for all changes and pull requests:
+1. **Before Snapshot**: Capture `before.png` of the running application *before* any code or UI modifications are made.
+2. **Code Changes**: Apply the requested code or UI changes.
+3. **Diff Verification**: Verify `git diff` is non-empty. If no changes exist, fail immediately.
+4. **After Snapshot**: Capture `after.png` of the running application *after* code and UI modifications are completed.
+5. **PR Description**: Write `PR_DESCRIPTION.md` embedding both `before.png` and `after.png`.
+6. **Quality Gate & PR**: Run `python3 scripts/pre-pr-check.py` and `npm run pr`.

@@ -2,48 +2,51 @@ import os
 import subprocess
 import sys
 
-print("🤖 [AI Agent Quality Gate] Initializing deep code review & evidence verification...")
+print("🛡️ Running Strict Lifecycle Quality Gate & Evidence Validation...")
 
-# 1. Inspect git diff and status
-diff_output = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True).stdout
-if not diff_output:
-    diff_output = subprocess.run(["git", "diff", "HEAD~1"], capture_output=True, text=True).stdout
+# 1. Verify Recent Changes Exist (Check git diff against HEAD~1 or staged or unstaged)
+diff_check = subprocess.run(["git", "diff", "--stat"], capture_output=True, text=True).stdout.strip()
+staged_check = subprocess.run(["git", "diff", "--cached", "--stat"], capture_output=True, text=True).stdout.strip()
+recent_commit = subprocess.run(["git", "log", "-1", "--stat"], capture_output=True, text=True).stdout.strip()
 
-print(f"📊 Analyzing diff size: {len(diff_output)} characters.")
+if not diff_check and not staged_check and not recent_commit:
+    print("❌ ERROR: Quality gate failed! No code or UI changes detected.")
+    sys.exit(1)
 
-# 2. Deep Static & Architectural Inspection
-has_server_js = os.path.exists("server.js")
-if has_server_js:
+print("✅ Verified: Code/UI changes detected.")
+
+# 2. Strict Before & After Evidence Verification
+has_before = os.path.exists("before.png") and os.path.getsize("before.png") > 0
+has_after = os.path.exists("after.png") and os.path.getsize("after.png") > 0
+
+if not (has_before and has_after):
+    print("❌ ERROR: Strict Evidence Failure! UI changes require both 'before.png' and 'after.png'.")
+    if not has_before:
+        print("   • missing 'before.png' captured before code edits.")
+    if not has_after:
+        print("   • missing 'after.png' captured after code edits.")
+    sys.exit(1)
+
+print("✅ Verified: Both 'before.png' and 'after.png' evidence snapshots are present.")
+
+# 3. Static Server Binding Check
+if os.path.exists("server.js"):
     with open("server.js", "r") as f:
-        server_code = f.read()
-        if "0.0.0.0" not in server_code or "PORT" not in server_code:
-            print("❌ [AI Reviewer] CRITICAL ARCHITECTURE ERROR: server.js fails to bind to '0.0.0.0' or use process.env.PORT.")
-            print("   Required pattern: app.listen(PORT, '0.0.0.0', () => ...)")
+        content = f.read()
+        if "0.0.0.0" not in content or "PORT" not in content:
+            print("❌ CRITICAL LINT ERROR: server.js must bind to '0.0.0.0' and use process.env.PORT.")
             sys.exit(1)
-        else:
-            print("✅ [AI Reviewer] Server architecture verified: Correct port binding & network interface.")
 
-# 3. Strict UI Evidence Verification
-staged_files = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True).stdout.splitlines()
-has_ui = any(f.endswith(('.html', '.css', '.svg', '.jsx', '.tsx')) for f in staged_files)
+# 4. PR Description Validation
+if not os.path.exists("PR_DESCRIPTION.md"):
+    print("❌ ERROR: PR_DESCRIPTION.md is missing!")
+    sys.exit(1)
 
-if has_ui or "index.html" in diff_output:
-    print("🎨 [AI Reviewer] UI Modifications detected in diff.")
-    has_before = os.path.exists("before.png")
-    has_after = os.path.exists("after.png")
-    
-    if not (has_before and has_after):
-        print("\n" + "="*80)
-        print("❌ [AI REVIEWER] QUALITY GATE BLOCKED: UI CHANGES REQUIRE BEFORE & AFTER EVIDENCE!")
-        print("="*80)
-        print("The AI Reviewer inspected your changes and detected UI modifications.")
-        print("Strict requirements:")
-        print("  • before.png -> Required in repository root")
-        print("  • after.png  -> Required in repository root")
-        print("\nPlease stage both screenshot images before committing or pushing.")
-        print("="*80 + "\n")
-        sys.exit(1)
-    else:
-        print("📸 [AI Reviewer] Evidence verified: Both before.png and after.png are present.")
+with open("PR_DESCRIPTION.md", "r") as f:
+    pr_text = f.read().lower()
 
-print("🎉 [AI Reviewer] Deep code review completed successfully. All architectural and visual standards met!")
+if "before.png" not in pr_text or "after.png" not in pr_text:
+    print("❌ ERROR: PR_DESCRIPTION.md must reference both before.png and after.png!")
+    sys.exit(1)
+
+print("=== 🎉 Strict Lifecycle Quality Gate Passed Successfully! ===")
