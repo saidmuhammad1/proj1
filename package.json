@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "pr": "bash scripts/create-pr.sh"
   },
   "dependencies": {
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
   }
 }
