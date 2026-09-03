@@ -1,58 +1,55 @@
 import os
 import subprocess
 
-print("Running Advanced Husky Quality Gate & Strict Labeling/Evidence Check...")
+print("🛡️ Running Strict Quality Gate & Evidence Validation...")
 
 staged_files = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True).stdout.splitlines()
 
-has_ui = any(f.endswith(('.html', '.css', '.svg')) for f in staged_files)
+has_ui = any(f.endswith(('.html', '.css', '.svg', '.jsx', '.tsx')) for f in staged_files)
 has_logic = any(f.endswith(('.js', '.ts', '.json')) for f in staged_files)
 
-badge = ""
+badge = "[Chore]"
 if has_ui and has_logic:
     badge = "[Full Stack Update]"
 elif has_ui:
     badge = "[UI Update]"
 elif has_logic:
     badge = "[Logic Update]"
-else:
-    badge = "[Chore]"
 
-print(f"Detected Change Classification: {badge}")
+print(f"📌 Change Classification: {badge}")
 
-# Automatically prepend badge label to commit message if editing commit msg
-commit_msg_path = ".git/COMMIT_EDITMSG"
-if os.path.exists(commit_msg_path):
-    with open(commit_msg_path, "r") as f:
-        msg = f.read().strip()
-    if msg and not msg.startswith("["):
-        new_msg = f"{badge} {msg}"
-        with open(commit_msg_path, "w") as f:
-            f.write(new_msg)
-        print(f"🏷️ Automatically prepended label to commit message: '{new_msg}'")
-
-# 1. Static network check
+# 1. Static Network Check
 if os.path.exists("server.js"):
     with open("server.js", "r") as f:
         content = f.read()
         if "0.0.0.0" not in content or "PORT" not in content:
             print("❌ CRITICAL LINT ERROR: server.js must bind to '0.0.0.0' and use process.env.PORT.")
             exit(1)
-        else:
-            print("✅ Static network check passed: server.js binds to 0.0.0.0 and PORT.")
 
-# 2. Strict Before & After Screenshot Enforcement (Require BOTH before.png AND after.png)
+# 2. Strict Before & After Screenshot Enforcement for UI Changes
 if has_ui:
-    print("🎨 UI Changes detected. Verifying BOTH before.png and after.png...")
-    
-    # Check staged files or working directory for before.png and after.png
-    has_before = os.path.exists("before.png") or any("before" in f.lower() for f in staged_files)
-    has_after = os.path.exists("after.png") or any("after" in f.lower() for f in staged_files)
+    print("🎨 UI Modifications detected in commit/push.")
+    has_before = os.path.exists("before.png")
+    has_after = os.path.exists("after.png")
     
     if not (has_before and has_after):
-        print("❌ CRITICAL QUALITY GATE FAILURE: UI changes STRICTLY require BOTH 'before.png' AND 'after.png' images to be provided. Only 1 or 0 found.")
+        print("\n" + "="*70)
+        print("❌ QUALITY GATE BLOCKED: UI CHANGES REQUIRE BEFORE & AFTER EVIDENCE!")
+        print("="*70)
+        print("Missing required screenshot files in the repository root:")
+        if not has_before:
+            print("  • ❌ before.png (Missing)")
+        else:
+            print("  • ✅ before.png (Found)")
+        if not has_after:
+            print("  • ❌ after.png (Missing)")
+        else:
+            print("  • ✅ after.png (Found)")
+        print("\nPlease place both 'before.png' and 'after.png' in the root directory")
+        print("and run 'git add before.png after.png' before committing or pushing.")
+        print("="*70 + "\n")
         exit(1)
     else:
-        print("📸 Both 'before.png' and 'after.png' evidence verified successfully!")
+        print("📸 Verified: Both 'before.png' and 'after.png' are present.")
 
-print(f"🎉 Quality Gate passed with tag {badge}!")
+print(f"✅ Quality Gate Passed successfully for {badge}!")
