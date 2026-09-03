@@ -1,0 +1,23 @@
+name: Auto-Deploy to Dokku
+
+on:
+  push:
+    branches:
+      - main
+      - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed so Dokku can see your git history
+
+      - name: Deploy to Dokku
+        uses: dokku/github-action@v1.4.0
+        with:
+          # If branch is 'prod', deploy to my-app-prod. Otherwise, deploy to my-app-staging.
+          git_remote_url: ${{ github.ref_name == 'prod' && 'ssh://dokku@vps3405238:22/my-app-prod' || 'ssh://dokku@vps3405238:22/my-app-staging' }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
