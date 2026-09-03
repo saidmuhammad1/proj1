@@ -26,30 +26,31 @@ if os.path.exists("server.js"):
             print("❌ CRITICAL LINT ERROR: server.js must bind to '0.0.0.0' and use process.env.PORT.")
             exit(1)
 
-# 2. Strict Before & After Screenshot Enforcement for UI Changes
+# 2. Strict Before & After Screenshot Enforcement for UI Changes (MANDATORY 2 IMAGES)
 if has_ui:
     print("🎨 UI Modifications detected in commit/push.")
-    has_before = os.path.exists("before.png")
-    has_after = os.path.exists("after.png")
     
-    if not (has_before and has_after):
+    before_exists = os.path.exists("before.png") and os.path.getsize("before.png") > 0
+    after_exists = os.path.exists("after.png") and os.path.getsize("after.png") > 0
+    
+    if not (before_exists and after_exists):
         print("\n" + "="*70)
-        print("❌ QUALITY GATE BLOCKED: UI CHANGES REQUIRE BEFORE & AFTER EVIDENCE!")
+        print("❌ CRITICAL QUALITY GATE FAILURE: UI CHANGES STRICTLY REQUIRE 2 VALID IMAGES!")
         print("="*70)
-        print("Missing required screenshot files in the repository root:")
-        if not has_before:
-            print("  • ❌ before.png (Missing)")
+        print("You must provide both 'before.png' and 'after.png' with valid image data:")
+        if not before_exists:
+            print("  • ❌ before.png (Missing or empty)")
         else:
-            print("  • ✅ before.png (Found)")
-        if not has_after:
-            print("  • ❌ after.png (Missing)")
+            print("  • ✅ before.png (Verified)")
+        if not after_exists:
+            print("  • ❌ after.png (Missing or empty)")
         else:
-            print("  • ✅ after.png (Found)")
-        print("\nPlease place both 'before.png' and 'after.png' in the root directory")
-        print("and run 'git add before.png after.png' before committing or pushing.")
+            print("  • ✅ after.png (Verified)")
+        print("\nPlease ensure both before.png and after.png are placed in the root")
+        print("and staged via 'git add before.png after.png' before committing or pushing.")
         print("="*70 + "\n")
         exit(1)
     else:
-        print("📸 Verified: Both 'before.png' and 'after.png' are present.")
+        print("📸 Verified: Both 'before.png' and 'after.png' are present and valid.")
 
 print(f"✅ Quality Gate Passed successfully for {badge}!")
