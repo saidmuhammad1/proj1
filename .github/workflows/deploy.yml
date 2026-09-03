@@ -18,8 +18,6 @@ jobs:
       - name: Deploy to Dokku
         uses: dokku/github-action@v1.4.0
         with:
-          # If branch is 'prod', deploy to my-app-prod. Otherwise, deploy to my-app-staging.
-          git_remote_url: ${{ github.ref_name == 'prod' && 'ssh://dokku@vps3405238:22/my-app-prod' || 'ssh://dokku@vps3405238:22/my-app-staging' }}
+          git_remote_url: ${{ github.ref_name == 'prod' && 'ssh://dokku@69.164.247.195:22/my-app-prod' || 'ssh://dokku@69.164.247.195:22/my-app-staging' }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # Forces the action to push your active branch (main or prod) instead of defaulting to master
           branch: ${{ github.ref_name }}
