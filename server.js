@@ -6,6 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Serve static assets from the root directory
 app.use(express.static(path.join(__dirname, '.')));
@@ -23,6 +24,6 @@ app.get('/api/status', (req, res) => {
     });
 });
 
-app.listen(process.env.PORT || 3002, () => {
-    console.log('proj1 listening on 3002');
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`proj1 listening on ${PORT}`);
 });
