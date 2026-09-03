@@ -13,4 +13,9 @@
 - [x] Strict 2-image quality gate passed successfully
 
 ### App Preview / Before & After Images
-<img src="https://raw.githubusercontent.com/saidmuhammad1/proj1/feature/header-accent-glow/screenshot.png" alt="Header Glow Preview" width="600"/>
+
+**Before:**
+<img src="https://raw.githubusercontent.com/saidmuhammad1/proj1/feature/header-accent-glow/before.png" alt="Before UI" width="600"/>
+
+**After:**
+<img src="https://raw.githubusercontent.com/saidmuhammad1/proj1/feature/header-accent-glow/after.png" alt="After UI" width="600"/>
