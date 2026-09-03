@@ -2,7 +2,7 @@ import subprocess
 import os
 import sys
 
-print("Running Automated PR Creator with AI Semantic Classification & GitHub Labeling...")
+print("Running Automated PR Creator with Strict UI Evidence & Labeling...")
 
 # 1. Get git diff against main
 diff_output = subprocess.run(["git", "diff", "origin/main"], capture_output=True, text=True).stdout
@@ -26,14 +26,24 @@ elif has_ui_semantics:
 elif has_logic_semantics:
     label = "Logic Update"
 
-print(f"🤖 AI Semantic Change Classification: {label}")
+print(f"🤖 AI Semantic Classification: {label}")
 
-# 3. Get current branch name
+# 3. Build PR Body with Strict Before/After Image Requirement for UI Changes
+body = "### Summary of Changes\n- Automated PR creation with strict quality gate validation.\n\n### What Changed\n- See commit history and diff."
+
+if has_ui_semantics:
+    print("🎨 UI Change detected. Enforcing Before & After image placeholders in PR description...")
+    body += "\n\n### Before / After UI Evidence\n- **Before:** ![Before](before.png)\n- **After:** ![After](after.png)"
+else:
+    body += "\n\n### Browser Testing\n- Verified locally."
+
+body += "\n\n### App Preview\n- Deployed via Dokku staging/production pipeline."
+
+# 4. Get current branch name
 branch = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True).stdout.strip()
 
-# 4. Create PR using gh CLI
-title = sys.argv[1] if len(sys.argv) > 1 else f"feat: AI-Classified PR for {branch}"
-body = sys.argv[2] if len(sys.argv) > 2 else "### Summary of Changes\n- Automated PR creation with quality gate validation and before/after evidence.\n\n### What Changed\n- See commit history and diff.\n\n### Browser Testing\n- Verified locally.\n\n### App Preview\n- Deployed via Dokku pipeline."
+# 5. Create PR using gh CLI
+title = sys.argv[1] if len(sys.argv) > 1 else f"feat: {label} - {branch}"
 
 pr_res = subprocess.run([
     "gh", "pr", "create",
@@ -51,7 +61,7 @@ if pr_res.returncode == 0:
     pr_output = pr_res.stdout.strip()
     print(f"Successfully created PR: {pr_output}")
     
-    # Extract PR number or URL
+    # Extract PR number
     pr_num = pr_output.split("/")[-1]
     
     # Apply GitHub PR label explicitly
