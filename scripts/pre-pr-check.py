@@ -1,9 +1,8 @@
 import os
 import subprocess
 
-print("Running Advanced Husky Quality Gate & Classification...")
+print("Running Advanced Husky Quality Gate & Strict Before/After Check...")
 
-# Get staged files
 staged_files = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True).stdout.splitlines()
 
 has_ui = any(f.endswith(('.html', '.css', '.svg')) for f in staged_files)
@@ -21,7 +20,7 @@ else:
 
 print(f"Detected Change Classification: {badge}")
 
-# 1. Static check on server.js for correct network and port binding
+# 1. Static network check
 if os.path.exists("server.js"):
     with open("server.js", "r") as f:
         content = f.read()
@@ -31,15 +30,17 @@ if os.path.exists("server.js"):
         else:
             print("✅ Static network check passed: server.js binds to 0.0.0.0 and PORT.")
 
-# 2. Strict Before/After Screenshot Enforcement for UI Changes
+# 2. Strict Before & After Screenshot Enforcement for UI Changes (Requires 2 images: before.png and after.png)
 if has_ui:
-    print("🎨 UI Changes detected.")
-    # Check for screenshot image evidence
-    has_screenshot = os.path.exists("screenshot.png") or any(f.endswith(('.png', '.jpg', '.jpeg')) for f in staged_files)
-    if not has_screenshot:
-        print("❌ CRITICAL QUALITY GATE FAILURE: UI changes require before/after screenshot images (e.g., screenshot.png) to be attached/staged before proceeding.")
+    print("🎨 UI Changes detected. Verifying Before & After screenshot evidence...")
+    
+    has_before = os.path.exists("before.png") or any("before" in f.lower() and f.endswith(('.png', '.jpg', '.jpeg')) for f in staged_files)
+    has_after = os.path.exists("after.png") or any("after" in f.lower() and f.endswith(('.png', '.jpg', '.jpeg')) for f in staged_files)
+    
+    if not (has_before and has_after):
+        print("❌ CRITICAL QUALITY GATE FAILURE: UI changes require BOTH 'before.png' and 'after.png' screenshot images to be staged/provided.")
         exit(1)
     else:
-        print("📸 Screenshot evidence verified successfully for UI changes.")
+        print("📸 Both 'before.png' and 'after.png' evidence verified successfully!")
 
 print(f"🎉 Quality Gate passed with tag {badge}!")
