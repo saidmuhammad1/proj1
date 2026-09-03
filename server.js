@@ -23,6 +23,6 @@ app.get('/api/status', (req, res) => {
     });
 });
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log('proj1 listening on port');
+app.listen(process.env.PORT || 3002, () => {
+    console.log('proj1 listening on 3002');
 });
