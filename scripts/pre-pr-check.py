@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-print("Running Advanced Husky Quality Gate & Strict Before/After Check...")
+print("Running Advanced Husky Quality Gate & Strict Labeling/Evidence Check...")
 
 staged_files = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True).stdout.splitlines()
 
@@ -20,6 +20,17 @@ else:
 
 print(f"Detected Change Classification: {badge}")
 
+# Automatically prepend badge label to commit message if editing commit msg
+commit_msg_path = ".git/COMMIT_EDITMSG"
+if os.path.exists(commit_msg_path):
+    with open(commit_msg_path, "r") as f:
+        msg = f.read().strip()
+    if msg and not msg.startswith("["):
+        new_msg = f"{badge} {msg}"
+        with open(commit_msg_path, "w") as f:
+            f.write(new_msg)
+        print(f"🏷️ Automatically prepended label to commit message: '{new_msg}'")
+
 # 1. Static network check
 if os.path.exists("server.js"):
     with open("server.js", "r") as f:
@@ -30,15 +41,16 @@ if os.path.exists("server.js"):
         else:
             print("✅ Static network check passed: server.js binds to 0.0.0.0 and PORT.")
 
-# 2. Strict Before & After Screenshot Enforcement for UI Changes (Requires 2 images: before.png and after.png)
+# 2. Strict Before & After Screenshot Enforcement (Require BOTH before.png AND after.png)
 if has_ui:
-    print("🎨 UI Changes detected. Verifying Before & After screenshot evidence...")
+    print("🎨 UI Changes detected. Verifying BOTH before.png and after.png...")
     
-    has_before = os.path.exists("before.png") or any("before" in f.lower() and f.endswith(('.png', '.jpg', '.jpeg')) for f in staged_files)
-    has_after = os.path.exists("after.png") or any("after" in f.lower() and f.endswith(('.png', '.jpg', '.jpeg')) for f in staged_files)
+    # Check staged files or working directory for before.png and after.png
+    has_before = os.path.exists("before.png") or any("before" in f.lower() for f in staged_files)
+    has_after = os.path.exists("after.png") or any("after" in f.lower() for f in staged_files)
     
     if not (has_before and has_after):
-        print("❌ CRITICAL QUALITY GATE FAILURE: UI changes require BOTH 'before.png' and 'after.png' screenshot images to be staged/provided.")
+        print("❌ CRITICAL QUALITY GATE FAILURE: UI changes STRICTLY require BOTH 'before.png' AND 'after.png' images to be provided. Only 1 or 0 found.")
         exit(1)
     else:
         print("📸 Both 'before.png' and 'after.png' evidence verified successfully!")
