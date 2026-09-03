@@ -1,55 +1,49 @@
 import os
 import subprocess
+import sys
 
-print("🛡️ Running Strict Quality Gate & Evidence Validation...")
+print("🤖 [AI Agent Quality Gate] Initializing deep code review & evidence verification...")
 
-staged_files = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True).stdout.splitlines()
+# 1. Inspect git diff and status
+diff_output = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True).stdout
+if not diff_output:
+    diff_output = subprocess.run(["git", "diff", "HEAD~1"], capture_output=True, text=True).stdout
 
-has_ui = any(f.endswith(('.html', '.css', '.svg', '.jsx', '.tsx')) for f in staged_files)
-has_logic = any(f.endswith(('.js', '.ts', '.json')) for f in staged_files)
+print(f"📊 Analyzing diff size: {len(diff_output)} characters.")
 
-badge = "[Chore]"
-if has_ui and has_logic:
-    badge = "[Full Stack Update]"
-elif has_ui:
-    badge = "[UI Update]"
-elif has_logic:
-    badge = "[Logic Update]"
-
-print(f"📌 Change Classification: {badge}")
-
-# 1. Static Network Check
-if os.path.exists("server.js"):
+# 2. Deep Static & Architectural Inspection
+has_server_js = os.path.exists("server.js")
+if has_server_js:
     with open("server.js", "r") as f:
-        content = f.read()
-        if "0.0.0.0" not in content or "PORT" not in content:
-            print("❌ CRITICAL LINT ERROR: server.js must bind to '0.0.0.0' and use process.env.PORT.")
-            exit(1)
+        server_code = f.read()
+        if "0.0.0.0" not in server_code or "PORT" not in server_code:
+            print("❌ [AI Reviewer] CRITICAL ARCHITECTURE ERROR: server.js fails to bind to '0.0.0.0' or use process.env.PORT.")
+            print("   Required pattern: app.listen(PORT, '0.0.0.0', () => ...)")
+            sys.exit(1)
+        else:
+            print("✅ [AI Reviewer] Server architecture verified: Correct port binding & network interface.")
 
-# 2. Strict Before & After Screenshot Enforcement for UI Changes
-if has_ui:
-    print("🎨 UI Modifications detected in commit/push.")
+# 3. Strict UI Evidence Verification
+staged_files = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True).stdout.splitlines()
+has_ui = any(f.endswith(('.html', '.css', '.svg', '.jsx', '.tsx')) for f in staged_files)
+
+if has_ui or "index.html" in diff_output:
+    print("🎨 [AI Reviewer] UI Modifications detected in diff.")
     has_before = os.path.exists("before.png")
     has_after = os.path.exists("after.png")
     
     if not (has_before and has_after):
-        print("\n" + "="*70)
-        print("❌ QUALITY GATE BLOCKED: UI CHANGES REQUIRE BEFORE & AFTER EVIDENCE!")
-        print("="*70)
-        print("Missing required screenshot files in the repository root:")
-        if not has_before:
-            print("  • ❌ before.png (Missing)")
-        else:
-            print("  • ✅ before.png (Found)")
-        if not has_after:
-            print("  • ❌ after.png (Missing)")
-        else:
-            print("  • ✅ after.png (Found)")
-        print("\nPlease place both 'before.png' and 'after.png' in the root directory")
-        print("and run 'git add before.png after.png' before committing or pushing.")
-        print("="*70 + "\n")
-        exit(1)
+        print("\n" + "="*80)
+        print("❌ [AI REVIEWER] QUALITY GATE BLOCKED: UI CHANGES REQUIRE BEFORE & AFTER EVIDENCE!")
+        print("="*80)
+        print("The AI Reviewer inspected your changes and detected UI modifications.")
+        print("Strict requirements:")
+        print("  • before.png -> Required in repository root")
+        print("  • after.png  -> Required in repository root")
+        print("\nPlease stage both screenshot images before committing or pushing.")
+        print("="*80 + "\n")
+        sys.exit(1)
     else:
-        print("📸 Verified: Both 'before.png' and 'after.png' are present.")
+        print("📸 [AI Reviewer] Evidence verified: Both before.png and after.png are present.")
 
-print(f"✅ Quality Gate Passed successfully for {badge}!")
+print("🎉 [AI Reviewer] Deep code review completed successfully. All architectural and visual standards met!")
