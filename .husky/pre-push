@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running Husky pre-push quality gate..."
+python3 scripts/pre-pr-check.py
+if [ $? -ne 0 ]; then
+    echo "Pre-push quality gate FAILED. Push aborted."
+    exit 1
+fi
+echo "Pre-push quality gate passed!"
