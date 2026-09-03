@@ -1,17 +1,23 @@
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const express = require('express');
+const path = require('path');
 const app = express();
-const port = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+// 1. (Optional) Serve extra static files like CSS or JS images if you have them
+app.use(express.static(path.join(__dirname, '.')));
+
+// 2. Change the root route to send your actual HTML page instead of raw JSON
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`proj1 listening on ${port}`);
+// 3. Keep your API status on a dedicated API route instead
+app.get('/api/status', (req, res) => {
+    res.json({
+        "name": "It's a Plan api",
+        "status": "ok"
+    });
+});
+
+app.listen(process.env.PORT || 3000, () => {
+    console.log('proj1 listening on port');
 });
