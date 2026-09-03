@@ -1,16 +1,16 @@
-## Pull Request: v1.2 Active Release Badge Update
+## Pull Request: Header Glow Accent Styling Update
 
 ### Summary of Changes
-- Updated system status badge to display "System Operational & Fully Verified (v1.2 Active)".
-- Captured updated before and after screenshot evidence.
+- Added a subtle glowing accent shadow to the dashboard header title (`text-shadow`).
+- Captured strict non-empty `before.png` and `after.png` screenshot evidence.
 
 ### What Changed
-- `index.html`: Updated status badge text in card header.
-- `before.png` & `after.png`: Updated UI comparison evidence.
+- `index.html`: Added inline text-shadow styling to header `<h1>`.
+- `before.png` & `after.png`: Provided mandatory UI comparison images.
 
 ### Browser Testing & Checkpoints
 - [x] Verified in Chromium (Desktop & Headless)
-- [x] Husky pre-commit & pre-push quality gates passed successfully
+- [x] Strict 2-image quality gate passed successfully
 
 ### App Preview / Before & After Images
-<img src="https://raw.githubusercontent.com/saidmuhammad1/proj1/feature/dark-mode-accent/screenshot.png" alt="App Screenshot v1.2" width="600"/>
+<img src="https://raw.githubusercontent.com/saidmuhammad1/proj1/feature/header-accent-glow/screenshot.png" alt="Header Glow Preview" width="600"/>
