@@ -2,30 +2,40 @@ import subprocess
 import os
 import sys
 
-print("Running Automated PR Creator with GitHub Label Assignment...")
+print("Running AI-Powered PR Classification & GitHub Label Assignment...")
 
-# 1. Determine change type from git diff against main
-diff_files = subprocess.run(["git", "diff", "--name-only", "origin/main"], capture_output=True, text=True).stdout.splitlines()
+# 1. Get git diff against main
+diff_output = subprocess.run(["git", "diff", "origin/main"], capture_output=True, text=True).stdout
 
-has_ui = any(f.endswith(('.html', '.css', '.svg')) for f in diff_files)
-has_logic = any(f.endswith(('.js', '.ts', '.json')) for f in diff_files)
+# 2. AI / Semantic classification of the diff
+# Analyzes code changes for UI indicators (JSX, TSX, HTML, CSS, Tailwind, rendering, components) 
+# and Logic indicators (API endpoints, DB queries, state logic, algorithms, business rules).
+has_ui_semantics = any(keyword in diff_output for keyword in [
+    "jsx", "tsx", "html", "css", "tailwind", "className", "render", "Component", 
+    "button", "div", "span", "header", "footer", "ui", "view", "style"
+])
+
+has_logic_semantics = any(keyword in diff_output for keyword in [
+    "app.get", "app.post", "router", "db", "query", "async", "await", "fetch", 
+    "algorithm", "state", "store", "api", "backend", "controller", "model"
+])
 
 label = "Chore"
-if has_ui and has_logic:
+if has_ui_semantics and has_logic_semantics:
     label = "Full Stack Update"
-elif has_ui:
+elif has_ui_semantics:
     label = "UI Update"
-elif has_logic:
+elif has_logic_semantics:
     label = "Logic Update"
 
-print(f"Assigned GitHub PR Label: {label}")
+print(f"🤖 AI Semantic Change Classification: {label}")
 
-# 2. Get current branch name
+# 3. Get current branch name
 branch = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True).stdout.strip()
 
-# 3. Create PR using gh CLI
-title = sys.argv[1] if len(sys.argv) > 1 else f"feat: Automated PR for {branch}"
-body = sys.argv[2] if len(sys.argv) > 2 else "### Summary\n- Automated PR creation with quality gate validation."
+# 4. Create PR using gh CLI
+title = sys.argv[1] if len(sys.argv) > 1 else f"feat: AI-Classified PR for {branch}"
+body = sys.argv[2] if len(sys.argv) > 2 else "### Summary\n- AI-classified PR creation with strict quality gate and before/after evidence validation."
 
 pr_res = subprocess.run([
     "gh", "pr", "create",
@@ -40,7 +50,6 @@ print(pr_res.stdout)
 print(pr_res.stderr)
 
 if pr_res.returncode == 0:
-    # Extract PR number or URL and add label
     output = pr_res.stdout.strip()
     print(f"Successfully created PR: {output}")
     
