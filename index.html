@@ -3,200 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proj1 Dashboard & Todo App</title>
+    <title>Proj1 Enterprise Admin Dashboard</title>
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-card: #1e293b;
-            --accent-color: #38bdf8;
-            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --success: #22c55e;
+            --bg-main: #090d16;
+            --bg-sidebar: #111827;
+            --bg-card: #1f2937;
+            --border-color: #374151;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --warning: #f59e0b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-primary);
+            background-color: var(--bg-main);
             color: var(--text-main);
+            display: flex;
             min-height: 100vh;
+        }
+        /* Sidebar */
+        aside {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 2rem 1rem;
+            padding: 1.5rem;
         }
-        .container {
-            width: 100%;
-            max-width: 800px;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-        header h1 {
-            font-size: 2.5rem;
+        .logo {
+            font-size: 1.25rem;
             font-weight: 800;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             margin-bottom: 2rem;
-        }
-        .status-badge {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-            padding: 0.35rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
         }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--success);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--success);
-        }
-        .todo-input-group {
-            display: flex;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-        input[type="text"] {
-            flex: 1;
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            color: var(--text-main);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        input[type="text"]:focus {
-            border-color: var(--accent-color);
-        }
-        button {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
-        button:active {
-            transform: scale(0.98);
-        }
-        ul {
+        .nav-links {
             list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
-        li {
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            padding: 0.875rem 1rem;
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
             border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+        }
+        .nav-links a.active, .nav-links a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+        }
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        topbar {
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.75rem;
-            animation: fadeIn 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-        li span {
-            word-break: break-all;
+        .avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
         }
-        .delete-btn {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: none;
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.2s;
+        .content-body {
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
         }
-        .delete-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
+        .page-header {
+            margin-bottom: 2rem;
         }
+        .page-header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .page-header p {
+            color: var(--text-muted);
+        }
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card .value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card .trend {
+            font-size: 0.8125rem;
+            color: var(--success);
+        }
+        /* Tables & Sections */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge.active { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .badge.pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        
         footer {
             text-align: center;
             color: var(--text-muted);
             font-size: 0.875rem;
+            padding: 2rem 0;
             margin-top: auto;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Proj1 Dashboard</h1>
-            <p>Powered by Node.js, Express & Dokku Auto-Deploy</p>
-        </header>
+    <aside>
+        <div class="logo">
+            ⚡ Proj1 Enterprise
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="active">📊 Overview</a></li>
+            <li><a href="#">👥 Users & Access</a></li>
+            <li><a href="#">🚀 Deployments</a></li>
+            <li><a href="#">⚙️ Settings</a></li>
+        </ul>
+    </aside>
 
-        <div class="card">
-            <div class="status-badge">
-                <div class="status-dot"></div>
-                System Operational & Fully Verified
+    <main>
+        <topbar>
+            <div>
+                <span style="color: var(--text-muted); font-size: 0.875rem;">Environment:</span> 
+                <strong style="color: var(--accent-cyan);">Production / Staging</strong>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">SA</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 0.9rem;">Saidmuhammad</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Admin</div>
+                </div>
+            </div>
+        </topbar>
+
+        <div class="content-body">
+            <div class="page-header">
+                <h1>Admin Control Center</h1>
+                <p>Monitor system health, deployments, and user activity in real time.</p>
             </div>
 
-            <div class="todo-input-group">
-                <input type="text" id="taskInput" placeholder="Add a new task...">
-                <button id="addBtn">Add Task</button>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Active Users</h3>
+                    <div class="value">1,482</div>
+                    <div class="trend">↑ 12% this week</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Server Uptime</h3>
+                    <div class="value">99.98%</div>
+                    <div class="trend" style="color: var(--success);">Optimal status</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Dokku Builds</h3>
+                    <div class="value">34</div>
+                    <div class="trend">All checks passed</div>
+                </div>
+                <div class="stat-card">
+                    <h3>System Load</h3>
+                    <div class="value">0.42</div>
+                    <div class="trend">Normal range</div>
+                </div>
             </div>
 
-            <ul id="taskList">
-                <li><span>Welcome to Proj1! Ready for your tasks.</span> <button class="delete-btn" onclick="this.parentElement.remove()">Delete</button></li>
-            </ul>
+            <div class="card">
+                <h2>Recent System Activity</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action / Event</th>
+                            <th>Target</th>
+                            <th>Status</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[Full Stack Update] Git Push</td>
+                            <td>main branch</td>
+                            <td><span class="badge active">Success</span></td>
+                            <td>Just now</td>
+                        </tr>
+                        <tr>
+                            <td>Dokku Auto-Deploy</td>
+                            <td>vps3405238 (Staging)</td>
+                            <td><span class="badge active">Deployed</span></td>
+                            <td>2 mins ago</td>
+                        </tr>
+                        <tr>
+                            <td>Husky Quality Gate</td>
+                            <td>pre-push hook</td>
+                            <td><span class="badge active">Passed</span></td>
+                            <td>5 mins ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <footer>
-            &copy; 2026 Proj1 Team. All rights reserved.
+            &copy; 2026 Proj1 Enterprise Admin Dashboard. All rights reserved.
         </footer>
-    </div>
-
-    <script>
-        const input = document.getElementById('taskInput');
-        const btn = document.getElementById('addBtn');
-        const list = document.getElementById('taskList');
-
-        function addTask() {
-            const val = input.value.trim();
-            if(!val) return;
-            const li = document.createElement('li');
-            li.innerHTML = `<span>${val}</span> <button class="delete-btn" onclick="this.parentElement.remove()">Delete</button>`;
-            list.appendChild(li);
-            input.value = '';
-        }
-
-        btn.addEventListener('click', addTask);
-        input.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') addTask();
-        });
-    </script>
+    </main>
 </body>
 </html>
