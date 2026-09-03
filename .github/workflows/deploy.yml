@@ -15,9 +15,42 @@ jobs:
         with:
           fetch-depth: 0 
 
-      - name: Deploy to Dokku
-        uses: dokku/github-action@v1.4.0
+      - name: Run appleboy/ssh-action@v1.2.2
+        uses: appleboy/ssh-action@v1.2.2
         with:
-          git_remote_url: ${{ github.ref_name == 'prod' && 'ssh://dokku@69.164.247.195:22/my-app-prod' || 'ssh://dokku@69.164.247.195:22/my-app-staging' }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          branch: ${{ github.ref_name }}
+          host: 69.164.247.195
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          protocol: tcp
+          timeout: 30s
+          command_timeout: 10m
+          script: |
+            set -e
+            
+            if [ "${GITHUB_REF_NAME}" = "main" ]; then
+              CONTAINER="proj1-dev"
+              PORT="3100"
+              ENVIRONMENT="development"
+              IMAGE_TAG="dev"
+            else
+              CONTAINER="proj1-prod"
+              PORT="3200"
+              ENVIRONMENT="production"
+              IMAGE_TAG="prod"
+            fi
+            
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "saidmuhammad1" --password-stdin
+            
+            docker pull "ghcr.io/saidmuhammad1/proj1:${IMAGE_TAG}"
+            
+            docker rm -f "$CONTAINER" 2>/dev/null || true
+            
+            docker run -d \
+              --name "$CONTAINER" \
+              --restart unless-stopped \
+              -p "${PORT}:3000" \
+              -e "APP_ENV=${ENVIRONMENT}" \
+              "ghcr.io/saidmuhammad1/proj1:${IMAGE_TAG}"
+            
+            docker image prune -f
