@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 COPY server.js ./
+COPY index.html ./
 
 ENV PORT=3000
 
