@@ -1,0 +1,35 @@
+name: PR Description Linter
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  lint-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate PR Description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            
+            const requiredSections = [
+              'Summary of Changes',
+              'What Changed',
+              'Browser Testing',
+              'App Preview'
+            ];
+            
+            const missing = requiredSections.filter(section => !body.includes(section));
+            
+            if (missing.length > 0) {
+              console.error(`PR description is missing required sections: ${missing.join(', ')}`);
+              core.setFailed(`PR description must include all required sections per contribution guidelines. Missing: ${missing.join(', ')}`);
+            } else {
+              console.log('PR description validation passed successfully!');
+            }
