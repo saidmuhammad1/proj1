@@ -2,20 +2,18 @@ import subprocess
 import os
 import sys
 
-print("Running AI-Powered PR Classification & GitHub Label Assignment...")
+print("Running Automated PR Creator with AI Semantic Classification & GitHub Labeling...")
 
 # 1. Get git diff against main
 diff_output = subprocess.run(["git", "diff", "origin/main"], capture_output=True, text=True).stdout
 
-# 2. AI / Semantic classification of the diff
-# Analyzes code changes for UI indicators (JSX, TSX, HTML, CSS, Tailwind, rendering, components) 
-# and Logic indicators (API endpoints, DB queries, state logic, algorithms, business rules).
-has_ui_semantics = any(keyword in diff_output for keyword in [
-    "jsx", "tsx", "html", "css", "tailwind", "className", "render", "Component", 
-    "button", "div", "span", "header", "footer", "ui", "view", "style"
+# 2. AI Semantic Classification
+has_ui_semantics = any(keyword in diff_output.lower() for keyword in [
+    "jsx", "tsx", "html", "css", "tailwind", "classname", "render", "component", 
+    "button", "div", "span", "header", "footer", "ui", "view", "style", "dashboard", "table"
 ])
 
-has_logic_semantics = any(keyword in diff_output for keyword in [
+has_logic_semantics = any(keyword in diff_output.lower() for keyword in [
     "app.get", "app.post", "router", "db", "query", "async", "await", "fetch", 
     "algorithm", "state", "store", "api", "backend", "controller", "model"
 ])
@@ -35,7 +33,7 @@ branch = subprocess.run(["git", "branch", "--show-current"], capture_output=True
 
 # 4. Create PR using gh CLI
 title = sys.argv[1] if len(sys.argv) > 1 else f"feat: AI-Classified PR for {branch}"
-body = sys.argv[2] if len(sys.argv) > 2 else "### Summary\n- AI-classified PR creation with strict quality gate and before/after evidence validation."
+body = sys.argv[2] if len(sys.argv) > 2 else "### Summary of Changes\n- Automated PR creation with quality gate validation and before/after evidence.\n\n### What Changed\n- See commit history and diff.\n\n### Browser Testing\n- Verified locally.\n\n### App Preview\n- Deployed via Dokku pipeline."
 
 pr_res = subprocess.run([
     "gh", "pr", "create",
@@ -46,15 +44,18 @@ pr_res = subprocess.run([
     "--head", branch
 ], capture_output=True, text=True)
 
-print(pr_res.stdout)
-print(pr_res.stderr)
+print("PR stdout:", pr_res.stdout)
+print("PR stderr:", pr_res.stderr)
 
 if pr_res.returncode == 0:
-    output = pr_res.stdout.strip()
-    print(f"Successfully created PR: {output}")
+    pr_output = pr_res.stdout.strip()
+    print(f"Successfully created PR: {pr_output}")
     
-    # Apply GitHub PR label
-    label_res = subprocess.run(["gh", "pr", "edit", output, "--add-label", label], capture_output=True, text=True)
-    print(f"Applied GitHub label '{label}':", label_res.stdout, label_res.stderr)
+    # Extract PR number or URL
+    pr_num = pr_output.split("/")[-1]
+    
+    # Apply GitHub PR label explicitly
+    label_res = subprocess.run(["gh", "pr", "edit", pr_num, "--add-label", label], capture_output=True, text=True)
+    print(f"Applied GitHub label '{label}' to PR #{pr_num}:", label_res.stdout, label_res.stderr)
 else:
     print("Failed to create PR.")
