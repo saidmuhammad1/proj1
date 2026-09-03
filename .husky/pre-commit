@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running Husky pre-commit quality gate..."
+python3 scripts/pre-pr-check.py
+if [ $? -ne 0 ]; then
+    echo "Pre-commit quality gate FAILED. Commit aborted."
+    exit 1
+fi
+echo "Pre-commit quality gate passed!"
