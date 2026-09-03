@@ -1,4 +1,4 @@
-name: Build and Publish
+name: Build, Publish and Deploy
 
 on:
   pull_request:
@@ -51,8 +51,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set image tag
-        id: tag
+      - name: Set environment
+        id: env
         run: |
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
             echo "environment=dev" >> "$GITHUB_OUTPUT"
@@ -66,5 +66,51 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/saidmuhammad1/proj1:${{ steps.tag.outputs.environment }}
-            ghcr.io/saidmuhammad1/proj1:${{ steps.tag.outputs.environment }}-${{ github.sha }}
+            ghcr.io/saidmuhammad1/proj1:${{ steps.env.outputs.environment }}
+            ghcr.io/saidmuhammad1/proj1:${{ steps.env.outputs.environment }}-${{ github.sha }}
+
+  deploy:
+    if: github.event_name == 'push'
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -e
+
+            if [ "${GITHUB_REF_NAME}" = "main" ]; then
+              CONTAINER="proj1-dev"
+              PORT="3100"
+              ENVIRONMENT="development"
+              IMAGE_TAG="dev"
+            else
+              CONTAINER="proj1-prod"
+              PORT="3200"
+              ENVIRONMENT="production"
+              IMAGE_TAG="prod"
+            fi
+
+            docker login ghcr.io \
+              -u "${{ github.actor }}" \
+              --password-stdin <<DOCKER_PASSWORD
+            ${{ secrets.GITHUB_TOKEN }}
+            DOCKER_PASSWORD
+
+            docker pull "ghcr.io/saidmuhammad1/proj1:${IMAGE_TAG}"
+
+            docker rm -f "$CONTAINER" 2>/dev/null || true
+
+            docker run -d \
+              --name "$CONTAINER" \
+              --restart unless-stopped \
+              -p "${PORT}:3000" \
+              -e "APP_ENV=${ENVIRONMENT}" \
+              "ghcr.io/saidmuhammad1/proj1:${IMAGE_TAG}"
+
+            docker image prune -f
