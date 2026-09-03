@@ -3,200 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proj1 Dashboard & Todo App</title>
+    <title>Proj1 — The Next-Gen Developer Platform</title>
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-card: #1e293b;
+            --bg-primary: #030712;
+            --bg-secondary: #0f172a;
+            --accent-glow: rgba(56, 189, 248, 0.15);
             --accent-color: #38bdf8;
             --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #334155;
-            --success: #22c55e;
+            --border-color: #1e293b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-main);
-            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        /* Navbar */
+        nav {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
         }
-        .container {
-            width: 100%;
-            max-width: 800px;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-        header h1 {
-            font-size: 2.5rem;
+        .logo {
+            font-size: 1.5rem;
             font-weight: 800;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
         }
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            margin-bottom: 2rem;
-        }
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-            padding: 0.35rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--success);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--success);
-        }
-        .todo-input-group {
+        .nav-links {
             display: flex;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-        input[type="text"] {
-            flex: 1;
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            color: var(--text-main);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        input[type="text"]:focus {
-            border-color: var(--accent-color);
-        }
-        button {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
-        button:active {
-            transform: scale(0.98);
-        }
-        ul {
+            gap: 2rem;
             list-style: none;
         }
-        li {
-            background: #0f172a;
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+        .btn {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 0 20px var(--accent-glow);
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        /* Hero Section */
+        header.hero {
+            text-align: center;
+            padding: 6rem 2rem 4rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header.hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -0.025em;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        header.hero h1 span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        header.hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+        }
+        /* Features Grid */
+        .features {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .feature-card {
+            background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            padding: 0.875rem 1rem;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: border-color 0.2s;
+        }
+        .feature-card:hover {
+            border-color: var(--accent-color);
+        }
+        .feature-card h3 {
+            font-size: 1.25rem;
             margin-bottom: 0.75rem;
-            animation: fadeIn 0.3s ease;
+            color: var(--text-main);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
-        li span {
-            word-break: break-all;
-        }
-        .delete-btn {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: none;
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .delete-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-        }
+        /* Footer */
         footer {
             text-align: center;
+            padding: 3rem 2rem;
             color: var(--text-muted);
-            font-size: 0.875rem;
-            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Proj1 Dashboard</h1>
-            <p>Powered by Node.js, Express & Dokku Auto-Deploy</p>
-        </header>
+    <nav>
+        <div class="logo">⚡ Proj1 Platform</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#solutions">Solutions</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+        </ul>
+        <a href="#get-started" class="btn">Get Started</a>
+    </nav>
 
-        <div class="card">
-            <div class="status-badge">
-                <div class="status-dot"></div>
-                System Operational & Fully Verified
-            </div>
+    <header class="hero">
+        <h1>Ship Applications at <span>Light Speed</span></h1>
+        <p>The enterprise-grade platform combining automated CI/CD pipelines, strict quality gates, and AI-powered PR workflows.</p>
+        <a href="#get-started" class="btn" style="font-size: 1.1rem; padding: 1rem 2rem;">Start Free Trial</a>
+    </header>
 
-            <div class="todo-input-group">
-                <input type="text" id="taskInput" placeholder="Add a new task...">
-                <button id="addBtn">Add Task</button>
-            </div>
-
-            <ul id="taskList">
-                <li><span>Welcome to Proj1! Ready for your tasks.</span> <button class="delete-btn" onclick="this.parentElement.remove()">Delete</button></li>
-            </ul>
+    <section id="features" class="features">
+        <div class="feature-card">
+            <h3>🚀 Instant Dokku Deploys</h3>
+            <p>Push to main or prod and watch your apps auto-deploy securely in seconds with zero downtime.</p>
         </div>
+        <div class="feature-card">
+            <h3>🛡️ Strict Quality Gates</h3>
+            <p>Husky hooks and pre-push validation ensure every commit meets rigorous port and code standards.</p>
+        </div>
+        <div class="feature-card">
+            <h3>🤖 AI PR Classification</h3>
+            <p>Smart diff analysis automatically categorizes pull requests and manages GitHub labels.</p>
+        </div>
+    </section>
 
-        <footer>
-            &copy; 2026 Proj1 Team. All rights reserved.
-        </footer>
-    </div>
-
-    <script>
-        const input = document.getElementById('taskInput');
-        const btn = document.getElementById('addBtn');
-        const list = document.getElementById('taskList');
-
-        function addTask() {
-            const val = input.value.trim();
-            if(!val) return;
-            const li = document.createElement('li');
-            li.innerHTML = `<span>${val}</span> <button class="delete-btn" onclick="this.parentElement.remove()">Delete</button>`;
-            list.appendChild(li);
-            input.value = '';
-        }
-
-        btn.addEventListener('click', addTask);
-        input.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') addTask();
-        });
-    </script>
+    <footer>
+        &copy; 2026 Proj1 Platform Inc. All rights reserved.
+    </footer>
 </body>
 </html>
