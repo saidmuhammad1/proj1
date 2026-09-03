@@ -1,10 +1,11 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+export PUPPETEER_EXECUTABLE_PATH='/opt/hermes/.playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell'
+
 echo "Running Husky pre-push quality gate..."
 python3 scripts/pre-pr-check.py
 if [ $? -ne 0 ]; then
-    echo "Pre-push quality gate FAILED. Push aborted."
+    echo "❌ Push aborted: Pre-push quality gate failed!"
     exit 1
 fi
-echo "Pre-push quality gate passed!"

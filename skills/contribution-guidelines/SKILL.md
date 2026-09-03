@@ -1,22 +1,21 @@
 ---
 name: contribution-guidelines
-description: "Enforce strict pre-PR lifecycle: before snapshot, changes, after snapshot, PR."
-version: 0.5.0
+description: "Professional software engineering contribution and evidence standards."
+version: 0.8.0
 author: Saidmuhammad (saidmuhammad1), Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
   hermes:
-    tags: [contribution, pr, guidelines, lifecycle, screenshots]
+    tags: [contribution, pr, guidelines, engineering, evidence]
     related_skills: [requesting-code-review]
 ---
 
-# Strict Contribution Guidelines & Lifecycle Skill
+# Professional Software Engineering Contribution Standards (In-Repo)
 
-Strict workflow rule for all changes and pull requests:
-1. **Before Snapshot**: Capture `before.png` of the running application *before* any code or UI modifications are made.
-2. **Code Changes**: Apply the requested code or UI changes.
-3. **Diff Verification**: Verify `git diff` is non-empty. If no changes exist, fail immediately.
-4. **After Snapshot**: Capture `after.png` of the running application *after* code and UI modifications are completed.
-5. **PR Description**: Write `PR_DESCRIPTION.md` embedding both `before.png` and `after.png`.
-6. **Quality Gate & PR**: Run `python3 scripts/pre-pr-check.py` and `npm run pr`.
+Senior engineering principles for all codebase modifications and pull requests in this repository:
+
+1. **Autonomous Architectural Reasoning**: Analyze codebases with deep context comprehension, evaluating security, robustness, and architectural patterns.
+2. **Empirical Evidence Verification**: Always require, capture, and inspect visible evidence (screenshots, test runs, logs). If evidence is missing, incomplete, or invisible, actively request and verify it before proceeding.
+3. **Independent Code Verification**: Enforce rigorous pre-commit and pre-PR quality gates, utilizing independent review subagents to catch edge cases, regressions, and security flaws.
+4. **Comprehensive Documentation & PR Standards**: Maintain pristine PR descriptions with clear summaries, technical change logs, and verified visual evidence.
