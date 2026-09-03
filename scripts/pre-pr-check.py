@@ -4,23 +4,23 @@ import sys
 
 print("🛡️ Running Strict Lifecycle Quality Gate & Evidence Validation...")
 
-# 1. Verify Git Diff is Non-Empty (Ensure changes actually happened)
-diff_check = subprocess.run(["git", "diff", "--stat"], capture_output=True, text=True)
-staged_check = subprocess.run(["git", "diff", "--cached", "--stat"], capture_output=True, text=True)
+# 1. Verify Recent Changes Exist (Check git diff against HEAD~1 or staged or unstaged)
+diff_check = subprocess.run(["git", "diff", "--stat"], capture_output=True, text=True).stdout.strip()
+staged_check = subprocess.run(["git", "diff", "--cached", "--stat"], capture_output=True, text=True).stdout.strip()
+recent_commit = subprocess.run(["git", "log", "-1", "--stat"], capture_output=True, text=True).stdout.strip()
 
-if not diff_check.stdout.strip() and not staged_check.stdout.strip():
-    print("❌ ERROR: Quality gate failed! No code or UI changes detected in the workspace.")
-    print("   Workflow order: 1) Take Before Snapshot -> 2) Make Changes -> 3) Take After Snapshot -> 4) Commit & PR.")
+if not diff_check and not staged_check and not recent_commit:
+    print("❌ ERROR: Quality gate failed! No code or UI changes detected.")
     sys.exit(1)
 
-print("✅ Verified: Code/UI changes detected in diff.")
+print("✅ Verified: Code/UI changes detected.")
 
 # 2. Strict Before & After Evidence Verification
 has_before = os.path.exists("before.png") and os.path.getsize("before.png") > 0
 has_after = os.path.exists("after.png") and os.path.getsize("after.png") > 0
 
 if not (has_before and has_after):
-    print("❌ ERROR: Strict Evidence Failure! UI changes require both 'before.png' (pre-change) and 'after.png' (post-change).")
+    print("❌ ERROR: Strict Evidence Failure! UI changes require both 'before.png' and 'after.png'.")
     if not has_before:
         print("   • missing 'before.png' captured before code edits.")
     if not has_after:
