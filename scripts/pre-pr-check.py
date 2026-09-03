@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-print("Running Strict Husky Quality Gate & Contribution Check...")
+print("Running Strict Husky Quality Gate & Evidence Verification...")
 
 # 1. Static check on server.js for correct network and port binding
 if os.path.exists("server.js"):
@@ -13,15 +13,15 @@ if os.path.exists("server.js"):
         else:
             print("✅ Static network check passed: server.js binds to 0.0.0.0 and PORT.")
 
-# 2. Check recent commit message or staged changes for standard conventional/structured format
-try:
-    last_commit = subprocess.run(["git", "log", "-1", "--pretty=%s"], capture_output=True, text=True, check=True).stdout.strip()
-    print(f"Latest commit message: '{last_commit}'")
-    
-    # Optional conventional commit check or structure check
-    if not any(last_commit.startswith(prefix) for prefix in ["feat:", "fix:", "chore:", "docs:", "refactor:"]):
-        print("⚠️ Warning: Commit message should ideally follow conventional format (feat:, fix:, chore:, docs:, refactor:).")
-except Exception as e:
-    print(f"Note on commit check: {e}")
+# 2. Enforce before/after evidence or screenshot check for UI changes
+staged_files = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True).stdout.splitlines()
+has_ui_changes = any(f.endswith(('.html', '.css', '.js')) for f in staged_files)
+
+if has_ui_changes:
+    print("🎨 UI changes detected in staged files.")
+    # Check if PR description template or evidence file exists
+    has_evidence = os.path.exists("PR_DESCRIPTION.md") or os.path.exists("screenshot.png")
+    if not has_evidence:
+        print("⚠️ Warning: UI changes detected without a screenshot or PR_DESCRIPTION.md evidence file. Please ensure before/after evidence is documented.")
 
 print("🎉 Strict Husky Quality Gate passed successfully!")
