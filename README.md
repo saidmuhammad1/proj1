@@ -1,3 +1,7 @@
 # Project 1
 
-Synced with remote repository.
+Node.js / Express application with live status dashboard.
+
+## App Screenshot
+
+![App Screenshot](./screenshot.png)
